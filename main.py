@@ -1,64 +1,40 @@
-from PIL import Image
-from PIL.PngImagePlugin import PngInfo
+from PySide6.QtWidgets import QApplication, QMainWindow
+from graphic.principal import Widget
+import sys
+from PySide6.QtGui import QGuiApplication
 
-import json
+class MainWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
 
-import get_functions as getF
+        # Get the primary screen
+        screen = QGuiApplication.primaryScreen()
+        screen_geometry = screen.availableGeometry()
 
-metadata = PngInfo()
+        # Calculate 50% of the screen width and height
+        window_width = int(screen_geometry.width() * 0.5)
+        window_height = int(screen_geometry.height() * 0.5)
 
-filename = 'albedo_emote2.png'
-im = Image.open(filename)
-print(im.info["prompt"])
+        # Set the window size
+        self.resize(window_width, window_height)
 
-for x, y in im.info.items():
-    metadata.add_text(x, y)
-    print(x, y)
+        # Set the window title
+        self.setWindowTitle("QTabWidgetDemo Demo")
 
-data = json.loads(im.info["prompt"])
+        # Create the central widget
+        central_widget = Widget(self)  # Pass the MainWindow instance
+        self.setCentralWidget(central_widget)
 
-height, width = im.size
-seed, steps, cfg, sampler_name, scheduler = getF.ksampler_values(data)
-positive_prompt, negative_prompt = getF.prompts(data)
+        # Create a status bar
+        self.status_bar = self.statusBar()
 
+    def show_status_message(self, message, duration=2000):
+        self.status_bar.showMessage(message, duration)
 
-# print('width: ', width)
-# print('height:', height)
-# print(f"Seed: {seed}")
-# print(f"Steps: {steps}")
-# print(f"CFG: {cfg}")
-# print(f"Sampler Name: {sampler_name}")
-# print(f"Scheduler: {scheduler}")
-#
-#
-# print("Positive prompt from KSampler:")
-# print(positive_prompt)
-#
-# print("Negative prompt from KSampler:")
-# print(negative_prompt)
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
 
+    window = MainWindow()
+    window.show()
 
-root = r"C:\Users\mathi\Documents\Comfy_ui\ComfyUI_windows_portable\ComfyUI\models/"
-
-lora_names = getF.lora_names(data)
-ckpt_name = getF.model_name(data)
-
-lora_hashes = ""
-for lora_name in lora_names:
-    hash = getF.hash(root + 'loras/' + lora_name)
-    lora_hashes += f"{lora_name.split('.')[0]}: {hash}, "
-    print(hash, lora_name)
-
-Model_hash = getF.hash(root + 'checkpoints/' + ckpt_name)
-print(Model_hash, ckpt_name.split(".")[0])
-
-final_str= (f"{positive_prompt}\nNegative prompt: {negative_prompt}\nSteps: {steps}, Sampler: {sampler_name}, "
-            f"Schedule type: {scheduler}, CFG scale: {cfg}, Seed: {seed}, Size: {width}x{height}, Model hash: {Model_hash},"
-            f"Model: {ckpt_name.split(".")[0]}, Lora hashes: \"{lora_hashes}\", "
-            f"Version: ComfyUi")
-
-print(final_str)
-
-metadata.add_text("parameters", final_str)
-
-#im.save("test.png", pnginfo=metadata)
+    app.exec()
