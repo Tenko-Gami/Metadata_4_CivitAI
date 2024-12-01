@@ -2,10 +2,14 @@ from PIL import Image
 import json
 from PIL.PngImagePlugin import PngInfo
 
+import os
+
 import functional.get_functions as get
+from functional.output_to_html import output_to_html
 
 
-def program(file_paths, model_folder):
+def program(file_paths, model_folder, output_widget):
+    file = open("./graphic/output.html", "w")
     for file_path in file_paths:
         metadata = PngInfo()
         image = Image.open(file_path)
@@ -17,8 +21,11 @@ def program(file_paths, model_folder):
         extracted_data = data_extraction(data=data, image=image, model_folder=model_folder)
         final_str = make_final_str(extracted_data=extracted_data)
 
+        output_to_html(file=file, extracted_data=extracted_data, file_name=os.path.basename(file_path))
+
         metadata.add_text("parameters", final_str)
         image.save('.'.join(file_path.split('.')[:-1]) + '_meta.png', pnginfo=metadata)
+    output_widget.refresh()
 
 
 def data_extraction(data, image, model_folder):

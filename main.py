@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import QApplication, QMainWindow
-from graphic.principal import Widget
+from graphic.principal import TabWidget
 import sys
 from PySide6.QtGui import QGuiApplication
 
@@ -23,8 +23,8 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("ComfyUi to civitAI metadata")
 
         # Create the central widget
-        central_widget = Widget(self)  # Pass the MainWindow instance
-        self.setCentralWidget(central_widget)
+        self.principal_widget = TabWidget(self)  # Pass the MainWindow instance
+        self.setCentralWidget(self.principal_widget)
 
         # Create a status bar
         self.status_bar = self.statusBar()

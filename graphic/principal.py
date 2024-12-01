@@ -1,28 +1,28 @@
 from PySide6.QtWidgets import QWidget, QHBoxLayout, QTabWidget
-from graphic.img_refactor_page import Widget as ImageRefactorWidget
+from graphic.img_refactor_page import ImageRefactorWidget
+from graphic.output_page import OutputWidget
 
 
-class Widget(QWidget):
+class TabWidget(QWidget):
     def __init__(self, main_window):
         super().__init__()
 
         self.main_window = main_window
-        self.setWindowTitle("QTabWidgetDemo Demo")
 
         tab_widget = QTabWidget(self)
 
-        # Image refactor
-        widget_img = ImageRefactorWidget(main_window)  # Pass the MainWindow instance
-
         # Outputs
-        widget_output = QWidget()
+        self.widget_output = OutputWidget()
+
+        # Image refactor
+        self.widget_img = ImageRefactorWidget(main_window, self.widget_output)  # Pass the MainWindow instance
 
         # Error
         widget_error = QWidget()
 
         # Add tabs to widget
-        tab_widget.addTab(widget_img, "Image refactor")
-        tab_widget.addTab(widget_output, "Output")
+        tab_widget.addTab(self.widget_img, "Image refactor")
+        tab_widget.addTab(self.widget_output, "Output")
         tab_widget.addTab(widget_error, "Error")
 
         layout = QHBoxLayout()

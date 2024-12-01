@@ -7,12 +7,12 @@ import os
 from functional.program import program
 
 
-class Widget(QWidget):
-    def __init__(self, main_window):
+class ImageRefactorWidget(QWidget):
+    def __init__(self, main_window, output_widget):
         super().__init__()
 
         self.main_window = main_window
-        self.setWindowTitle("QLabel Image Demo")
+        self.output = output_widget
 
         # Initialize file paths and folder
         self.selected_file_paths = []
@@ -174,4 +174,4 @@ class Widget(QWidget):
                 self.run_button.setEnabled(True)
 
     def run_program(self):
-        program(file_paths=self.selected_file_paths, model_folder=self.selected_folder_path)
+        program(file_paths=self.selected_file_paths, model_folder=self.selected_folder_path, output_widget=self.output)
