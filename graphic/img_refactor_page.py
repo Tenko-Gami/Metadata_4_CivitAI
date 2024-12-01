@@ -11,8 +11,9 @@ class Widget(QWidget):
         self.main_window = main_window
         self.setWindowTitle("QLabel Image Demo")
 
-        # Initialize image list, current index, and file paths set
+        # Initialize file paths and folder
         self.selected_file_paths = []
+        self.selected_folder_path = None
 
         # Create a QStackedWidget to manage images
         self.stacked_widget = QStackedWidget()
@@ -36,24 +37,45 @@ class Widget(QWidget):
         self.next_button.clicked.connect(self.show_next_image)
         self.next_button.setEnabled(False)  # Initially disabled
 
-        # Create a QPushButton to open the file dialog
+        # Create a QPushButton to remove image
         self.remove_button = QPushButton("Remove Image")
         self.remove_button.clicked.connect(self.remove_image)
-        self.remove_button.setEnabled(False)
+        self.remove_button.setEnabled(False)  # Initially disabled
 
         # Create a QLabel to show information
         self.image_info_label = QLabel()
         self.image_info_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.image_info_label.setText("No Image Currently Selected")
+
+        # Create a QPushButton to select the ComfyUI "models" folder
+        self.folder_button = QPushButton("Select a folder")
+        self.folder_button.clicked.connect(self.select_model_folder)
+
+        # Create a QLabel to show information
+        self.folder_label = QLabel()
+        self.folder_label.setText("No folder Currently Selected")
+
+        # Create a QPushButton to run the program
+        self.run_button = QPushButton("Run the program")
+        self.run_button.clicked.connect(self.run_program)
+        self.run_button.setEnabled(False)  # Initially disabled
 
         button_layout = QHBoxLayout()
         button_layout.addWidget(self.prev_button)
         button_layout.addWidget(self.select_button)
         button_layout.addWidget(self.next_button)
         button_layout.addWidget(self.remove_button)
+
+        folder_launch_layout = QHBoxLayout()
+        folder_launch_layout.addWidget(self.folder_button, 1)
+        folder_launch_layout.addWidget(self.folder_label, 3)
+        folder_launch_layout.addWidget(self.run_button, 1)
+
         main_layout = QVBoxLayout()
         main_layout.addWidget(self.stacked_widget)
         main_layout.addWidget(self.image_info_label)
         main_layout.addLayout(button_layout)
+        main_layout.addLayout(folder_launch_layout)
 
         self.setLayout(main_layout)
 
@@ -99,9 +121,11 @@ class Widget(QWidget):
             self.prev_button.setEnabled(self.stacked_widget.currentIndex() > 1)
             self.next_button.setEnabled(self.stacked_widget.currentIndex() < self.stacked_widget.count() - 1)
             self.remove_button.setEnabled(True)
-            self.image_info_label.setText(
-                f"Image : {os.path.basename(self.selected_file_paths[self.stacked_widget.currentIndex()-1])}," +
-                f" ({self.stacked_widget.currentIndex()}/{self.stacked_widget.count()-1})")
+            if self.selected_folder_path:
+                self.run_button.setEnabled(True)
+        self.image_info_label.setText(
+            f"Image : {os.path.basename(self.selected_file_paths[self.stacked_widget.currentIndex()-1])}," +
+            f"\t ({self.stacked_widget.currentIndex()}/{self.stacked_widget.count()-1})")
 
     def remove_image(self):
         self.selected_file_paths.pop(self.stacked_widget.currentIndex()-1)
@@ -112,15 +136,39 @@ class Widget(QWidget):
             self.next_button.setEnabled(False)
         if self.stacked_widget.count() == 1:
             self.remove_button.setEnabled(False)
+            self.run_button.setEnabled(False)
+        if self.stacked_widget.count() != 1:
+            self.image_info_label.setText(
+                f"Image : {os.path.basename(self.selected_file_paths[self.stacked_widget.currentIndex()-1])}," +
+                f"\t ({self.stacked_widget.currentIndex()}/{self.stacked_widget.count()-1})")
+        else:
+            self.image_info_label.setText("No Image Currently Selected")
 
     def show_previous_image(self):
         if self.stacked_widget.currentIndex() > 0:
             self.stacked_widget.setCurrentIndex(self.stacked_widget.currentIndex()-1)
             self.prev_button.setEnabled(self.stacked_widget.currentIndex() > 1)
             self.next_button.setEnabled(self.stacked_widget.currentIndex() < self.stacked_widget.count() - 1)
+        self.image_info_label.setText(
+            f"Image : {os.path.basename(self.selected_file_paths[self.stacked_widget.currentIndex()-1])}," +
+            f"\t ({self.stacked_widget.currentIndex()}/{self.stacked_widget.count()-1})")
 
     def show_next_image(self):
         if self.stacked_widget.currentIndex() < self.stacked_widget.count():
             self.stacked_widget.setCurrentIndex(self.stacked_widget.currentIndex()+1)
             self.prev_button.setEnabled(self.stacked_widget.currentIndex() > 1)
             self.next_button.setEnabled(self.stacked_widget.currentIndex() < self.stacked_widget.count() - 1)
+        self.image_info_label.setText(
+            f"Image : {os.path.basename(self.selected_file_paths[self.stacked_widget.currentIndex()-1])}," +
+            f"\t ({self.stacked_widget.currentIndex()}/{self.stacked_widget.count()-1})")
+
+    def select_model_folder(self):
+        folder = QFileDialog.getExistingDirectory(self, "Select Folder")
+        if folder:
+            self.selected_folder_path = folder
+            self.folder_label.setText(f"Folder : '{self.selected_folder_path}'")
+            if self.stacked_widget.currentIndex() >= 1:
+                self.run_button.setEnabled(True)
+
+    def run_program(self):
+        pass
