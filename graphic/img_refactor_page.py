@@ -1,6 +1,6 @@
 from PySide6.QtGui import QPixmap, QGuiApplication
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QPushButton, QFileDialog, QStackedWidget, QLabel, QHBoxLayout
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QSettings
 
 import os
 
@@ -13,10 +13,10 @@ class ImageRefactorWidget(QWidget):
 
         self.main_window = main_window
         self.output = output_widget
+        self.settings = QSettings("TenkoComp", "CmC")
 
         # Initialize file paths and folder
         self.selected_file_paths = []
-        self.selected_folder_path = None
 
         # Create a QStackedWidget to manage images
         self.stacked_widget = QStackedWidget()
@@ -53,10 +53,15 @@ class ImageRefactorWidget(QWidget):
         # Create a QPushButton to select the ComfyUI "models" folder
         self.folder_button = QPushButton("Select a folder")
         self.folder_button.clicked.connect(self.select_model_folder)
+        # Initialize the folder path from the settings
+        self.selected_folder_path = self.settings.value("folderPath", "")
 
         # Create a QLabel to show information
         self.folder_label = QLabel()
-        self.folder_label.setText("No folder Currently Selected")
+        if self.selected_folder_path:
+            self.folder_label.setText(f"Folder : '{self.selected_folder_path}'")
+        else:
+            self.folder_label.setText("No folder Currently Selected")
 
         # Create a QPushButton to run the program
         self.run_button = QPushButton("Run the program")
@@ -169,6 +174,7 @@ class ImageRefactorWidget(QWidget):
         folder = QFileDialog.getExistingDirectory(self, "Select Folder")
         if folder:
             self.selected_folder_path = folder
+            self.settings.setValue("folderPath", self.selected_folder_path)
             self.folder_label.setText(f"Folder : '{self.selected_folder_path}'")
             if self.stacked_widget.currentIndex() >= 1:
                 self.run_button.setEnabled(True)
