@@ -1,7 +1,10 @@
 from PySide6.QtGui import QPixmap, QGuiApplication
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QPushButton, QFileDialog, QStackedWidget, QLabel, QHBoxLayout
 from PySide6.QtCore import Qt
+
 import os
+
+from functional.program import program
 
 
 class Widget(QWidget):
@@ -171,4 +174,4 @@ class Widget(QWidget):
                 self.run_button.setEnabled(True)
 
     def run_program(self):
-        pass
+        program(file_paths=self.selected_file_paths, model_folder=self.selected_folder_path)

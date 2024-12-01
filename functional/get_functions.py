@@ -38,28 +38,28 @@ def prompts(data):
 
 
 def lora_names(data):
-    lora_names = []
+    loras = []
 
     for key, value in data.items():
         if value.get("class_type") == "LoraLoader":
             inputs = value["inputs"]
             lora_name = inputs.get("lora_name")
             if lora_name:
-                lora_names.append(lora_name)
+                loras.append(lora_name)
 
-    return lora_names
+    return loras
 
 
 def model_name(data):
-    model_name = None
+    model = None
 
     for key, value in data.items():
         if value.get("class_type") == "CheckpointLoaderSimple":
             inputs = value["inputs"]
-            model_name = inputs.get("ckpt_name")
+            model = inputs.get("ckpt_name")
             break
 
-    return model_name
+    return model
 
 
 def hash(filename):

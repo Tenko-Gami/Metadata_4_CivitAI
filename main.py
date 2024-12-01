@@ -3,6 +3,7 @@ from graphic.principal import Widget
 import sys
 from PySide6.QtGui import QGuiApplication
 
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -19,7 +20,7 @@ class MainWindow(QMainWindow):
         self.resize(window_width, window_height)
 
         # Set the window title
-        self.setWindowTitle("QTabWidgetDemo Demo")
+        self.setWindowTitle("ComfyUi to civitAI metadata")
 
         # Create the central widget
         central_widget = Widget(self)  # Pass the MainWindow instance
@@ -28,8 +29,9 @@ class MainWindow(QMainWindow):
         # Create a status bar
         self.status_bar = self.statusBar()
 
-    def show_status_message(self, message, duration=2000):
+    def show_status_message(self, message, duration=5000):
         self.status_bar.showMessage(message, duration)
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

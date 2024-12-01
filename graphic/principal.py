@@ -1,6 +1,7 @@
 from PySide6.QtWidgets import QWidget, QHBoxLayout, QTabWidget
 from graphic.img_refactor_page import Widget as ImageRefactorWidget
 
+
 class Widget(QWidget):
     def __init__(self, main_window):
         super().__init__()
